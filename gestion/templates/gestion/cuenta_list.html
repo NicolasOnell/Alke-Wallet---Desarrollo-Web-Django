@@ -1,0 +1,67 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Listado de Cuentas - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > Cuentas
+</div>
+
+<h2>Listado de Cuentas</h2>
+
+<p>
+    <a href="{% url 'gestion:cuenta-create' %}" class="btn btn-success">+ Nueva Cuenta</a>
+</p>
+
+{% if cuentas %}
+<table>
+    <thead>
+        <tr>
+            <th>Número de Cuenta</th>
+            <th>Cliente</th>
+            <th>Tipo</th>
+            <th>Saldo</th>
+            <th>Apertura</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cuenta in cuentas %}
+        <tr>
+            <td>{{ cuenta.numero_cuenta }}</td>
+            <td>{{ cuenta.cliente.nombre }}</td>
+            <td>{{ cuenta.tipo_cuenta|default:"N/A" }}</td>
+            <td>${{ cuenta.saldo }}</td>
+            <td>{{ cuenta.fecha_apertura|date:"d/m/Y" }}</td>
+            <td>{% if cuenta.activa %}<span style="color: green;">✓</span>{% else %}<span style="color: red;">✗</span>{% endif %}</td>
+            <td>
+                <a href="{% url 'gestion:cuenta-detail' cuenta.pk %}" class="btn">Ver</a>
+                <a href="{% url 'gestion:cuenta-update' cuenta.pk %}" class="btn">Editar</a>
+                <a href="{% url 'gestion:cuenta-delete' cuenta.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1">Primera</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+    {% endif %}
+    <span class="current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info">
+    No hay cuentas registradas. <a href="{% url 'gestion:cuenta-create' %}">Crear la primera cuenta</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Listado de Clientes - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > Clientes
+</div>
+
+<h2>Listado de Clientes</h2>
+
+<p>
+    <a href="{% url 'gestion:cliente-create' %}" class="btn btn-success">+ Nuevo Cliente</a>
+</p>
+
+{% if clientes %}
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Registro</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cliente in clientes %}
+        <tr>
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.telefono|default:"N/A" }}</td>
+            <td>{{ cliente.fecha_registro|date:"d/m/Y" }}</td>
+            <td>
+                {% if cliente.activo %}
+                    <span style="color: green;">✓ Activo</span>
+                {% else %}
+                    <span style="color: red;">✗ Inactivo</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'gestion:cliente-detail' cliente.pk %}" class="btn">Ver</a>
+                <a href="{% url 'gestion:cliente-update' cliente.pk %}" class="btn">Editar</a>
+                <a href="{% url 'gestion:cliente-delete' cliente.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación -->
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1">Primera</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+    {% endif %}
+    
+    <span class="current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info">
+    No hay clientes registrados. <a href="{% url 'gestion:cliente-create' %}">Crear el primer cliente</a>
+</div>
+{% endif %}
+{% endblock %}

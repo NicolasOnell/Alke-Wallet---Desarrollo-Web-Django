@@ -1,0 +1,61 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Inicio - Alke Wallet{% endblock %}
+
+{% block content %}
+<h2>Dashboard de Bienvenida</h2>
+<p>Bienvenido al sistema de gestión financiera Alke Wallet</p>
+
+<div class="stats">
+    <div class="stat-card">
+        <h3>{{ total_clientes }}</h3>
+        <p>Clientes Activos</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_cuentas }}</h3>
+        <p>Cuentas Activas</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_transacciones }}</h3>
+        <p>Transacciones Totales</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ cantidad_con_telefono }}</h3>
+        <p>Clientes con Teléfono</p>
+    </div>
+</div>
+
+<h3>Estadísticas de Transacciones</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Tipo de Transacción</th>
+            <th>Cantidad</th>
+            <th>Monto Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stat in stats_transacciones %}
+        <tr>
+            <td>{{ stat.tipo }}</td>
+            <td>{{ stat.total }}</td>
+            <td>${{ stat.monto_total }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No hay transacciones registradas</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div style="margin-top: 30px;">
+    <h3>Acciones Rápidas</h3>
+    <p>
+        <a href="{% url 'gestion:cliente-create' %}" class="btn btn-success">Nuevo Cliente</a>
+        <a href="{% url 'gestion:cuenta-create' %}" class="btn btn-success">Nueva Cuenta</a>
+        <a href="{% url 'gestion:transaccion-create' %}" class="btn btn-success">Nueva Transacción</a>
+        <a href="{% url 'gestion:consultas' %}" class="btn">Ver Consultas Personalizadas</a>
+    </p>
+</div>
+{% endblock %}

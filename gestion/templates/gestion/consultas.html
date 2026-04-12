@@ -1,0 +1,101 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Consultas Personalizadas - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > Consultas Personalizadas
+</div>
+
+<h2>Consultas Personalizadas</h2>
+
+<p>Esta página demuestra consultas avanzadas usando el ORM de Django y SQL personalizado.</p>
+
+<h3>1. Total de Clientes Activos</h3>
+<div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <p>
+        <strong>Método:</strong> Query SQL directa con cursor<br>
+        <strong>Total de Clientes Activos:</strong> <span style="font-size: 1.3em; color: #667eea;">{{ total_activos }}</span>
+    </p>
+    <pre><code>with connection.cursor() as cursor:
+    cursor.execute("""
+        SELECT COUNT(*) as total FROM gestion_cliente WHERE activo = 1
+    """)
+    resultado = cursor.fetchone()</code></pre>
+</div>
+
+<h3>2. Saldo Promedio por Tipo de Cuenta</h3>
+<div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <p><strong>Método:</strong> ORM con annotate() y agregación</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo de Cuenta</th>
+                <th>Saldo Promedio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in saldo_promedio %}
+            <tr>
+                <td>{{ item.tipo_cuenta__nombre|default:"Sin tipo" }}</td>
+                <td>${{ item.promedio|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No hay datos disponibles</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <pre><code>saldo_promedio = Cuenta.objects.values('tipo_cuenta__nombre').annotate(
+    promedio=Sum('saldo') / Count('id')
+)</code></pre>
+</div>
+
+<h3>3. Clientes con Múltiples Cuentas</h3>
+<div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <p><strong>Método:</strong> ORM con annotate() y filter()</p>
+    {% if clientes_multiples %}
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Email</th>
+                <th>Cantidad de Cuentas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes_multiples %}
+            <tr>
+                <td><a href="{% url 'gestion:cliente-detail' cliente.pk %}">{{ cliente.nombre }}</a></td>
+                <td>{{ cliente.email }}</td>
+                <td>{{ cliente.total_cuentas }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #666;">No hay clientes con múltiples cuentas.</p>
+    {% endif %}
+    <pre><code>clientes_multiples = Cliente.objects.annotate(
+    total_cuentas=Count('cuentas')
+).filter(total_cuentas__gt=1)</code></pre>
+</div>
+
+<h3>Información Adicional</h3>
+<div style="background: #f8f9fa; padding: 20px; border-radius: 5px;">
+    <p>
+        <strong>Estas consultas demuestran:</strong>
+    </p>
+    <ul style="margin-left: 20px;">
+        <li><strong>Cursor directo:</strong> Ejecución de SQL personalizado con Django</li>
+        <li><strong>Annotate:</strong> Agregación de datos dentro de queries del ORM</li>
+        <li><strong>Filter avanzado:</strong> Filtrado con conteos y comparaciones</li>
+        <li><strong>Relaciones:</strong> Traversing de relaciones ForeignKey</li>
+    </ul>
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'gestion:inicio' %}" class="btn">Volver al Inicio</a>
+</div>
+{% endblock %}

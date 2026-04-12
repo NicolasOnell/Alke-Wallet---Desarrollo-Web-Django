@@ -1,0 +1,23 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Eliminar Cuenta - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > <a href="{% url 'gestion:cuenta-list' %}">Cuentas</a>
+</div>
+
+<h2>Eliminar Cuenta</h2>
+
+<div class="alert alert-error">
+    <strong>⚠️ Atención:</strong> Está a punto de eliminar la cuenta <strong>{{ object.numero_cuenta }}</strong>.
+    <br>Esta acción no se puede deshacer.
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <p>¿Está seguro de que desea eliminar esta cuenta?</p>
+    <button type="submit" class="btn btn-danger">Sí, eliminar cuenta</button>
+    <a href="{% url 'gestion:cuenta-detail' object.pk %}" class="btn">Cancelar</a>
+</form>
+{% endblock %}

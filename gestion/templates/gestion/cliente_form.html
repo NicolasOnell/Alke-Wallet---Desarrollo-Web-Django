@@ -1,0 +1,58 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Cliente - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > <a href="{% url 'gestion:cliente-list' %}">Clientes</a>
+</div>
+
+<h2>{% if form.instance.pk %}Actualizar Cliente{% else %}Crear Nuevo Cliente{% endif %}</h2>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    
+    <fieldset>
+        <legend>Información del Cliente</legend>
+        
+        {% if form.nombre.errors %}
+            <div class="alert alert-error">{{ form.nombre.errors }}</div>
+        {% endif %}
+        <div>
+            <label for="{{ form.nombre.id_for_label }}">Nombre:</label>
+            {{ form.nombre }}
+        </div>
+        
+        {% if form.email.errors %}
+            <div class="alert alert-error">{{ form.email.errors }}</div>
+        {% endif %}
+        <div>
+            <label for="{{ form.email.id_for_label }}">Email:</label>
+            {{ form.email }}
+        </div>
+        
+        {% if form.telefono.errors %}
+            <div class="alert alert-error">{{ form.telefono.errors }}</div>
+        {% endif %}
+        <div>
+            <label for="{{ form.telefono.id_for_label }}">Teléfono:</label>
+            {{ form.telefono }}
+        </div>
+        
+        {% if form.activo.errors %}
+            <div class="alert alert-error">{{ form.activo.errors }}</div>
+        {% endif %}
+        <div>
+            <label for="{{ form.activo.id_for_label }}">
+                {{ form.activo }}
+                Activo
+            </label>
+        </div>
+    </fieldset>
+    
+    <button type="submit" class="btn btn-success">
+        {% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Cliente
+    </button>
+    <a href="{% url 'gestion:cliente-list' %}" class="btn">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Detalles de la Cuenta - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > <a href="{% url 'gestion:cuenta-list' %}">Cuentas</a> > {{ cuenta.numero_cuenta }}
+</div>
+
+<h2>Cuenta {{ cuenta.numero_cuenta }}</h2>
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <p><strong>Cliente:</strong> <a href="{% url 'gestion:cliente-detail' cuenta.cliente.pk %}">{{ cuenta.cliente.nombre }}</a></p>
+    <p><strong>Tipo de Cuenta:</strong> {{ cuenta.tipo_cuenta|default:"N/A" }}</p>
+    <p><strong>Saldo:</strong> <strong style="font-size: 1.5em; color: green;">${{ cuenta.saldo }}</strong></p>
+    <p><strong>Fecha de Apertura:</strong> {{ cuenta.fecha_apertura|date:"d/m/Y H:i" }}</p>
+    <p><strong>Estado:</strong> {% if cuenta.activa %}<span style="color: green;">✓ Activa</span>{% else %}<span style="color: red;">✗ Inactiva</span>{% endif %}</p>
+</div>
+
+<h3>Últimas Transacciones</h3>
+{% if cuenta.transacciones_enviadas.all|length > 0 or cuenta.transacciones_recibidas.all|length > 0 %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaccion in cuenta.transacciones_enviadas.all|slice:":5" %}
+        <tr>
+            <td>#{{ transaccion.id }}</td>
+            <td>{{ transaccion.get_tipo_display }}</td>
+            <td>-${{ transaccion.monto }}</td>
+            <td>{{ transaccion.get_estado_display }}</td>
+            <td>{{ transaccion.fecha_transaccion|date:"d/m/Y H:i" }}</td>
+            <td><a href="{% url 'gestion:transaccion-detail' transaccion.pk %}" class="btn">Ver</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color: #666;">Esta cuenta no tiene transacciones.</p>
+{% endif %}
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'gestion:cuenta-update' cuenta.pk %}" class="btn">Editar</a>
+    <a href="{% url 'gestion:transaccion-create' %}?cuenta_origen={{ cuenta.pk }}" class="btn btn-success">Nueva Transacción</a>
+    <a href="{% url 'gestion:cuenta-delete' cuenta.pk %}" class="btn btn-danger">Eliminar</a>
+    <a href="{% url 'gestion:cuenta-list' %}" class="btn">Volver</a>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Cuenta - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > <a href="{% url 'gestion:cuenta-list' %}">Cuentas</a>
+</div>
+
+<h2>{% if form.instance.pk %}Actualizar Cuenta{% else %}Crear Nueva Cuenta{% endif %}</h2>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    
+    <fieldset>
+        <legend>Información de la Cuenta</legend>
+        
+        <div>
+            <label for="{{ form.cliente.id_for_label }}">Cliente:</label>
+            {{ form.cliente }}
+        </div>
+        
+        <div>
+            <label for="{{ form.tipo_cuenta.id_for_label }}">Tipo de Cuenta:</label>
+            {{ form.tipo_cuenta }}
+        </div>
+        
+        <div>
+            <label for="{{ form.numero_cuenta.id_for_label }}">Número de Cuenta:</label>
+            {{ form.numero_cuenta }}
+        </div>
+        
+        <div>
+            <label for="{{ form.saldo.id_for_label }}">Saldo Inicial:</label>
+            {{ form.saldo }}
+        </div>
+        
+        <div>
+            <label for="{{ form.activa.id_for_label }}">
+                {{ form.activa }}
+                Activa
+            </label>
+        </div>
+    </fieldset>
+    
+    <button type="submit" class="btn btn-success">
+        {% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Cuenta
+    </button>
+    <a href="{% url 'gestion:cuenta-list' %}" class="btn">Cancelar</a>
+</form>
+{% endblock %}

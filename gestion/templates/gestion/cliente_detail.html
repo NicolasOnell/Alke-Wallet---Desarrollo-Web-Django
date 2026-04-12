@@ -1,0 +1,55 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Detalles del Cliente - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > <a href="{% url 'gestion:cliente-list' %}">Clientes</a> > {{ cliente.nombre }}
+</div>
+
+<h2>{{ cliente.nombre }}</h2>
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <p><strong>Email:</strong> {{ cliente.email }}</p>
+    <p><strong>Teléfono:</strong> {{ cliente.telefono|default:"No proporcionado" }}</p>
+    <p><strong>Fecha de Registro:</strong> {{ cliente.fecha_registro|date:"d/m/Y H:i" }}</p>
+    <p><strong>Estado:</strong> {% if cliente.activo %}<span style="color: green;">✓ Activo</span>{% else %}<span style="color: red;">✗ Inactivo</span>{% endif %}</p>
+</div>
+
+<h3>Cuentas Asociadas</h3>
+{% if cliente.cuentas.all %}
+<table>
+    <thead>
+        <tr>
+            <th>Número de Cuenta</th>
+            <th>Tipo</th>
+            <th>Saldo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cuenta in cliente.cuentas.all %}
+        <tr>
+            <td>{{ cuenta.numero_cuenta }}</td>
+            <td>{{ cuenta.tipo_cuenta|default:"N/A" }}</td>
+            <td>${{ cuenta.saldo }}</td>
+            <td>{% if cuenta.activa %}<span style="color: green;">✓</span>{% else %}<span style="color: red;">✗</span>{% endif %}</td>
+            <td>
+                <a href="{% url 'gestion:cuenta-detail' cuenta.pk %}" class="btn">Ver</a>
+                <a href="{% url 'gestion:cuenta-update' cuenta.pk %}" class="btn">Editar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color: #666;">Este cliente no tiene cuentas asociadas. <a href="{% url 'gestion:cuenta-create' %}">Crear una cuenta</a></p>
+{% endif %}
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'gestion:cliente-update' cliente.pk %}" class="btn">Editar</a>
+    <a href="{% url 'gestion:cliente-delete' cliente.pk %}" class="btn btn-danger">Eliminar</a>
+    <a href="{% url 'gestion:cliente-list' %}" class="btn">Volver</a>
+</div>
+{% endblock %}

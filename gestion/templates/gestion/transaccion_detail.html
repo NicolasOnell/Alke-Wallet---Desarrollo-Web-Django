@@ -1,0 +1,40 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Detalles de Transacción - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > <a href="{% url 'gestion:transaccion-list' %}">Transacciones</a> > #{{ transaccion.id }}
+</div>
+
+<h2>Transacción #{{ transaccion.id }}</h2>
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+    <p><strong>Tipo:</strong> {{ transaccion.get_tipo_display }}</p>
+    <p><strong>Monto:</strong> <strong style="font-size: 1.5em; color: #667eea;">${{ transaccion.monto }}</strong></p>
+    <p><strong>Cuenta Origen:</strong> <a href="{% url 'gestion:cuenta-detail' transaccion.cuenta_origen.pk %}">{{ transaccion.cuenta_origen.numero_cuenta }}</a></p>
+    {% if transaccion.cuenta_destino %}
+    <p><strong>Cuenta Destino:</strong> <a href="{% url 'gestion:cuenta-detail' transaccion.cuenta_destino.pk %}">{{ transaccion.cuenta_destino.numero_cuenta }}</a></p>
+    {% endif %}
+    <p><strong>Estado:</strong> 
+        {% if transaccion.estado == 'COMPLETADA' %}
+            <span style="color: green;">✓ {{ transaccion.get_estado_display }}</span>
+        {% elif transaccion.estado == 'FALLIDA' or transaccion.estado == 'CANCELADA' %}
+            <span style="color: red;">✗ {{ transaccion.get_estado_display }}</span>
+        {% else %}
+            <span style="color: orange;">⏳ {{ transaccion.get_estado_display }}</span>
+        {% endif %}
+    </p>
+    <p><strong>Descripción:</strong> {{ transaccion.descripcion|default:"Sin descripción" }}</p>
+    <p><strong>Fecha de Transacción:</strong> {{ transaccion.fecha_transaccion|date:"d/m/Y H:i:s" }}</p>
+    {% if transaccion.fecha_procesamiento %}
+    <p><strong>Fecha de Procesamiento:</strong> {{ transaccion.fecha_procesamiento|date:"d/m/Y H:i:s" }}</p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'gestion:transaccion-update' transaccion.pk %}" class="btn">Editar</a>
+    <a href="{% url 'gestion:transaccion-delete' transaccion.pk %}" class="btn btn-danger">Eliminar</a>
+    <a href="{% url 'gestion:transaccion-list' %}" class="btn">Volver</a>
+</div>
+{% endblock %}

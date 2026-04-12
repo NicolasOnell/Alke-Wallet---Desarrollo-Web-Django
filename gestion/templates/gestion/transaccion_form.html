@@ -1,0 +1,54 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Transacción - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > <a href="{% url 'gestion:transaccion-list' %}">Transacciones</a>
+</div>
+
+<h2>{% if form.instance.pk %}Actualizar Transacción{% else %}Crear Nueva Transacción{% endif %}</h2>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    
+    <fieldset>
+        <legend>Información de la Transacción</legend>
+        
+        <div>
+            <label for="{{ form.cuenta_origen.id_for_label }}">Cuenta Origen:</label>
+            {{ form.cuenta_origen }}
+        </div>
+        
+        <div>
+            <label for="{{ form.cuenta_destino.id_for_label }}">Cuenta Destino:</label>
+            {{ form.cuenta_destino }}
+        </div>
+        
+        <div>
+            <label for="{{ form.tipo.id_for_label }}">Tipo de Transacción:</label>
+            {{ form.tipo }}
+        </div>
+        
+        <div>
+            <label for="{{ form.monto.id_for_label }}">Monto:</label>
+            {{ form.monto }}
+        </div>
+        
+        <div>
+            <label for="{{ form.estado.id_for_label }}">Estado:</label>
+            {{ form.estado }}
+        </div>
+        
+        <div>
+            <label for="{{ form.descripcion.id_for_label }}">Descripción:</label>
+            {{ form.descripcion }}
+        </div>
+    </fieldset>
+    
+    <button type="submit" class="btn btn-success">
+        {% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Transacción
+    </button>
+    <a href="{% url 'gestion:transaccion-list' %}" class="btn">Cancelar</a>
+</form>
+{% endblock %}

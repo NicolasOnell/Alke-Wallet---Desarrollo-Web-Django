@@ -1,0 +1,77 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Listado de Transacciones - Alke Wallet{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'gestion:inicio' %}">Inicio</a> > Transacciones
+</div>
+
+<h2>Listado de Transacciones</h2>
+
+<p>
+    <a href="{% url 'gestion:transaccion-create' %}" class="btn btn-success">+ Nueva Transacción</a>
+</p>
+
+{% if transacciones %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Monto</th>
+            <th>Cuenta Origen</th>
+            <th>Cuenta Destino</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaccion in transacciones %}
+        <tr>
+            <td>#{{ transaccion.id }}</td>
+            <td>{{ transaccion.get_tipo_display }}</td>
+            <td>${{ transaccion.monto }}</td>
+            <td>{{ transaccion.cuenta_origen.numero_cuenta }}</td>
+            <td>{{ transaccion.cuenta_destino.numero_cuenta|default:"N/A" }}</td>
+            <td>
+                {% if transaccion.estado == 'COMPLETADA' %}
+                    <span style="color: green;">✓ {{ transaccion.get_estado_display }}</span>
+                {% elif transaccion.estado == 'FALLIDA' or transaccion.estado == 'CANCELADA' %}
+                    <span style="color: red;">✗ {{ transaccion.get_estado_display }}</span>
+                {% else %}
+                    <span style="color: orange;">⏳ {{ transaccion.get_estado_display }}</span>
+                {% endif %}
+            </td>
+            <td>{{ transaccion.fecha_transaccion|date:"d/m/Y H:i" }}</td>
+            <td>
+                <a href="{% url 'gestion:transaccion-detail' transaccion.pk %}" class="btn">Ver</a>
+                <a href="{% url 'gestion:transaccion-update' transaccion.pk %}" class="btn">Editar</a>
+                <a href="{% url 'gestion:transaccion-delete' transaccion.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1">Primera</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+    {% endif %}
+    <span class="current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info">
+    No hay transacciones registradas. <a href="{% url 'gestion:transaccion-create' %}">Crear la primera transacción</a>
+</div>
+{% endif %}
+{% endblock %}
