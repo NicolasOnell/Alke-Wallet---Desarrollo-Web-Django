@@ -1,6 +1,7 @@
-from django.db import models
+from django.db import models, transaction
 from django.core.validators import MinValueValidator
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 class Cliente(models.Model):
@@ -133,6 +134,24 @@ class Transaccion(models.Model):
         if self.cuenta_destino:
             return f"{self.get_tipo_display()} de ${self.monto} - {self.get_estado_display()}"
         return f"{self.get_tipo_display()} de ${self.monto} - {self.get_estado_display()}"
+
+    def clean(self):
+        """Valida que la cuenta de origen tenga saldo suficiente para transferencias o retiros."""
+        if self.tipo in ['TRANSFERENCIA', 'RETIRO', 'PAGO']:
+            if self.cuenta_origen.saldo < self.monto:
+                raise ValidationError(f"Saldo insuficiente en la cuenta {self.cuenta_origen.numero_cuenta}")
+
+    def save(self, *args, **kwargs):
+        """Actualiza los saldos de las cuentas involucradas de forma atómica."""
+        with transaction.atomic():
+            if not self.pk and self.estado == 'COMPLETADA':
+                if self.tipo in ['TRANSFERENCIA', 'RETIRO', 'PAGO']:
+                    self.cuenta_origen.saldo -= self.monto
+                    self.cuenta_origen.save()
+                if (self.tipo == 'TRANSFERENCIA' or self.tipo == 'DEPOSITO') and self.cuenta_destino:
+                    self.cuenta_destino.saldo += self.monto
+                    self.cuenta_destino.save()
+            super().save(*args, **kwargs)
 
 
 class Reporte(models.Model):

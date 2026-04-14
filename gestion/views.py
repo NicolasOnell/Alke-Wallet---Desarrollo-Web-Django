@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.db.models import Q, Sum, Count
 from django.db import connection
@@ -8,7 +9,7 @@ from .models import Cliente, Cuenta, Transaccion, TipoCuenta, Reporte
 
 # ===================== VISTAS DE CLIENTE =====================
 
-class ClienteListView(ListView):
+class ClienteListView(LoginRequiredMixin, ListView):
     """
     Vista para listar todos los clientes.
     """
